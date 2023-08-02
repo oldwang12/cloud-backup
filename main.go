@@ -1,163 +1,66 @@
 package main
 
 import (
-	"archive/tar"
-	"compress/gzip"
 	"flag"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
-	"path/filepath"
-	"strings"
+	"os/exec"
 	"time"
 )
 
 func main() {
-	fileName := flag.String("filename", "", "")
-	srcDir := flag.String("src_dir", "", "")
-	dstDir := flag.String("dst_dir", "", "")
+	filePath := flag.String("filepath", "", "文件路径")
+	waitTime := flag.Duration("wait_time", time.Hour, "")
+	alistSrc := flag.String("alist_src", "", "")
+	alistDst := flag.String("alist_dir", "", "")
 	alistHost := flag.String("alist_host", "", "")
+	alistDataDir := flag.String("alist_data_dir", "", "")
 	alistToken := flag.String("alist_token", "", "")
 	flag.Parse()
-	defer time.Sleep(time.Hour)
-	if *fileName == "" || *srcDir == "" || *dstDir == "" || *alistHost == "" || *alistToken == "" {
-		fmt.Println("缺少参数")
-	}
+	check(*filePath, *alistSrc, *alistDst, *alistHost, *alistDataDir, *alistToken)
 
+	timer := time.NewTimer(*waitTime)
 	for {
-		time.Sleep(time.Minute)
-		fmt.Println("=========================================")
-		// 获取当前时间
-		currentTime := time.Now().Format("2006-01-02_15h04m")
-		fmt.Println("当前时间:", currentTime)
-
-		// 拼接备份文件名
-		fileNameTarGz := filepath.Join("/root/data", fmt.Sprintf("%s_%s.tar", currentTime, *fileName))
-		fmt.Println("备份文件名:", fileNameTarGz)
-
-		// 创建压缩文件
-		err := tarGzFile(*fileName, fileNameTarGz)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		fmt.Println("压缩成功")
-
-		// 发送请求
-		err = sendRequest(fileNameTarGz, *alistHost, *alistToken, *srcDir, *dstDir)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		fmt.Println(fileNameTarGz + "上传百度云成功")
-		time.Sleep(6 * time.Hour)
+		fmt.Println("start time: ", time.Now().Format("2006-01-02 15:04:05"))
+		run(*filePath, *alistSrc, *alistDst, *alistHost, *alistDataDir, *alistToken)
+		<-timer.C
 	}
 }
 
-func tarGzFile(sourceDir, tarFilePath string) error {
-	// 创建压缩文件
-	tarFile, err := os.Create(tarFilePath)
+func run(filePath, alistSrc, alistDst, alistHost, alistDataDir, alistToken string) {
+	cmd := exec.Command("sh", "./tar.sh", filePath, alistSrc, alistDst, alistHost, alistDataDir, alistToken)
+
+	output, err := cmd.Output()
 	if err != nil {
-		return err
+		fmt.Println(err)
+		return
 	}
-	defer tarFile.Close()
-
-	// 创建 tar.Writer
-	tarWriter := tar.NewWriter(tarFile)
-	defer tarWriter.Close()
-
-	// 压缩文件夹
-	err = filepath.Walk(sourceDir, func(filePath string, fileInfo os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-
-		// 获取相对于源文件夹的相对路径
-		relPath, err := filepath.Rel(sourceDir, filePath)
-		if err != nil {
-			return err
-		}
-
-		// 创建 tar.Entry
-		header, err := tar.FileInfoHeader(fileInfo, "")
-		if err != nil {
-			return err
-		}
-		header.Name = relPath
-
-		// 写入 header
-		err = tarWriter.WriteHeader(header)
-		if err != nil {
-			return err
-		}
-
-		if !fileInfo.Mode().IsRegular() {
-			return nil
-		}
-
-		// 写入文件内容
-		file, err := os.Open(filePath)
-		if err != nil {
-			return err
-		}
-		defer file.Close()
-
-		_, err = io.Copy(tarWriter, file)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	})
-	return err
+	fmt.Println(string(output))
 }
 
-func gzipWriter(inputFile, outputFile *os.File) error {
-	fileStat, err := inputFile.Stat()
-	if err != nil {
-		return err
+func check(filePath, alistSrc, alistDst, alistHost, alistDataDir, alistToken string) {
+	_, err := os.Stat(filePath)
+	if os.IsNotExist(err) {
+		panic(err)
 	}
 
-	// 创建gzip Writer
-	gzipWriter := gzip.NewWriter(outputFile)
-	defer gzipWriter.Close()
-
-	gzipWriter.Name = fileStat.Name()
-	gzipWriter.ModTime = fileStat.ModTime()
-
-	// 写入文件内容
-	_, err = io.Copy(gzipWriter, inputFile)
-	if err != nil {
-		return err
+	if alistSrc == "" {
+		panic("empty alist src")
 	}
 
-	return nil
-}
-
-func sendRequest(fileNameTarGz, host, token, src, dst string) error {
-	url := host + "/api/fs/copy"
-	method := "POST"
-
-	payload := fmt.Sprintf(`{
-		"src_dir": "%s",
-		"dst_dir": "%s",
-		"names": ["%s"]
-	}`, src, dst, fileNameTarGz)
-
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, strings.NewReader(payload))
-	if err != nil {
-		return err
+	if alistDst == "" {
+		panic("empty alist dst")
 	}
 
-	req.Header.Add("Authorization", token)
-	req.Header.Add("Content-Type", "application/json;charset=UTF-8")
-
-	res, err := client.Do(req)
-	if err != nil {
-		return err
+	if alistHost == "" {
+		panic("empty alist host")
 	}
-	defer res.Body.Close()
-	return nil
+
+	if alistDataDir == "" {
+		panic("empty alist data dir")
+	}
+
+	if alistToken == "" {
+		panic("empty alist token")
+	}
 }
