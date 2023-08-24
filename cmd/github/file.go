@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path"
 	"time"
 
 	"github.com/google/go-github/v38/github"
@@ -44,7 +45,7 @@ func uploadToGitHub(localFilePath, remoteFilePath string) error {
 
 func getBackupFiles() []string {
 	var backupFilePaths []string
-	info, err := os.Stat(backupFilePath)
+	info, err := os.Stat(path.Join("root", backupFilePath))
 	if err != nil {
 		klog.Fatal(err)
 	}
