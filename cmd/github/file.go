@@ -45,7 +45,7 @@ func uploadToGitHub(localFilePath, remoteFilePath string) error {
 
 func getBackupFiles() []string {
 	var backupFilePaths []string
-	info, err := os.Stat(path.Join("root", backupFilePath))
+	info, err := os.Stat(path.Join("/root", backupFilePath))
 	if err != nil {
 		klog.Fatal(err)
 	}

@@ -20,15 +20,15 @@ services:
     command:
     - /root/cloud-backup
     # Register a github token: https://github.com/settings/tokens/new.
-    - --token="<Github Token>"
+    - --token=<Github Token>
     # Your github username.
-    - --owner="oldwang12"
+    - --owner=<username>
     # Your backup repo.
-    - --repo=cloud-backup
+    - --repo=<Your Repo>
     # Your backup repo branch.
-    - --branch="dev"
+    - --branch=<Your Branch>
     # Your backup filename.
-    - -f="abcd"
+    - -f=<Filename>
     volumes:
     - type: bind
       source: /path/backup_file
