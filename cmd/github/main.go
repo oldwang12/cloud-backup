@@ -40,14 +40,22 @@ func init() {
 }
 
 func run() {
-	now := time.Now().Format("2006_01_02_150405")
-	backupFilePaths := getBackupFiles()
-	for _, localFileName := range backupFilePaths {
-		remoteFileName := path.Join(fmt.Sprintf("%v_%v", localFileName, now))
+	backupFunc := func() {
+		now := time.Now().Format("2006_01_02_150405")
+		backupFilePaths := getBackupFiles()
+		for _, localFileName := range backupFilePaths {
+			remoteFileName := path.Join(fmt.Sprintf("%v_%v", localFileName, now))
 
-		if err := uploadToGitHub(localFileName, remoteFileName); err != nil {
-			klog.Fatal(err)
+			if err := uploadToGitHub(localFileName, remoteFileName); err != nil {
+				klog.Error(err)
+				return
+			}
+			klog.Infof("upload %s to %v success.", localFileName, remoteFileName)
 		}
-		klog.Infof("upload %s to %v success.", localFileName, remoteFileName)
+
+	}
+	for {
+		backupFunc()
+		time.Sleep(time.Hour)
 	}
 }
