@@ -1,0 +1,22 @@
+name: Build Docker Image
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Login to hub.docker.com
+      run: docker login --username=${{ secrets.HUB_USERNAME }} -p ${{ secrets.HUB_PASSWORD }}
+
+    - name: Login to aliyun
+      run: docker login --username=${{ secrets.HUB_USERNAME }} registry.cn-hangzhou.aliyuncs.com -p ${{ secrets.HUB_PASSWORD }}
+
+    - name: Build the Docker image
+      run: make build
