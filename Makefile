@@ -3,6 +3,8 @@
 COMMIT_HASH = $(shell git rev-parse --short=7 HEAD)
 
 build: ## build image
+	docker buildx create --name all --node local --driver docker-container --platform linux/amd64,linux/arm64,linux/arm/v7 --use
+	docker buildx use all
 	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t registry.cn-hangzhou.aliyuncs.com/breawang/cloud-backup:${COMMIT_HASH} -o type=registry .
 	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t oldwang6/cloud-backup:${COMMIT_HASH} -o type=registry .
 
