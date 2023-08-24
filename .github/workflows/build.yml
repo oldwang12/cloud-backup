@@ -15,8 +15,8 @@ jobs:
     - name: Login to hub.docker.com
       run: docker login --username=${{ secrets.HUB_USERNAME }} -p ${{ secrets.HUB_PASSWORD }}
 
-    - name: Login to aliyun
-      run: docker login --username=${ALI_HUB_USERNAME} registry.cn-hangzhou.aliyuncs.com -p ${{ secrets.ALI_HUB_PASSWORD }}
+    # - name: Login to aliyun
+    #   run: docker login --username=${ALI_HUB_USERNAME} registry.cn-hangzhou.aliyuncs.com -p ${{ secrets.ALI_HUB_PASSWORD }}
 
     - name: Build the Docker image
       run: make build
