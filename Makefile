@@ -5,8 +5,8 @@ COMMIT_HASH = $(shell git rev-parse --short=7 HEAD)
 build: ## build image
 	docker buildx create --name all --node local --driver docker-container --platform linux/amd64,linux/arm64,linux/arm/v7 --use
 	docker buildx use all
-	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t oldwang6/cloud-backup:${COMMIT_HASH} --push
-	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t oldwang6/cloud-backup:latest -o --push
+	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t oldwang6/cloud-backup:${COMMIT_HASH} --push .
+	docker buildx build --platform linux/amd64,linux/arm64,linux/arm/v7 -t oldwang6/cloud-backup:latest -o --push .
 
 # build-amd64: ## build linux/amd64 image
 # 	docker buildx create --name test --node local --driver docker-container --platform linux/amd64 --use
