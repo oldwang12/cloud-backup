@@ -11,35 +11,39 @@ on:
     types: [published]
 
 jobs:
-  build-amd64:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-buildx-action@v1
 
       - name: Login to hub.docker.com
         run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
 
-      - name: Build amd64 image
-        run: make build-amd64
+      - name: Build image
+        run: make build
 
-  build-arm64:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+  # build-arm64:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Login to hub.docker.com
-        run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
+  #     - name: Login to hub.docker.com
+  #       run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
 
-      - name: Build arm64 image
-        run: make build-arm64
+  #     - name: Build arm64 image
+  #       run: make build-arm64
 
-  build-arm-v7:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+  # build-arm-v7:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Login to hub.docker.com
-        run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
+  #     - name: Login to hub.docker.com
+  #       run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
 
-      - name: Build arm v7 image
-        run: make build-arm-v7
+  #     - name: Build arm v7 image
+  #       run: make build-arm-v7
