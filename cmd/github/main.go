@@ -106,7 +106,8 @@ func isDir(filePath string) bool {
 
 func tarFile(filePath string) (string, error) {
 	tarFileName := fmt.Sprintf("%s.tar.gz", path.Base(filePath))
-
+	command := fmt.Sprintf("sh", "-c", fmt.Sprintf("cd %v;", path.Dir(filePath)), "tar", "-zcf", tarFileName, "-C", path.Base(filePath))
+	klog.Info(command)
 	cmd := exec.Command("sh", "-c", fmt.Sprintf("cd %v;", path.Dir(filePath)), "tar", "-zcf", tarFileName, "-C", path.Base(filePath))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
