@@ -165,6 +165,6 @@ func removeFileNameDate(filename string) string {
 		// 使用正则表达式替换文件名中的日期和时间部分
 		return re.ReplaceAllString(filename, ".")
 	}
-	klog.Warningf("%v not match %v.", filename, pattern)
+	klog.Warningf("%v not match.", filename)
 	return ""
 }

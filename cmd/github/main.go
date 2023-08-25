@@ -67,7 +67,7 @@ func run() {
 		}
 		backupFileName := generateBackupFileName(filePath, source)
 		if err := g.Upload(filePath, backupFileName); err != nil {
-			klog.Error(err)
+			klog.Error("upload %s to %v failed, %v", filePath, backupFileName, err)
 			return
 		}
 		klog.Infof("upload %s to %v success.", filePath, backupFileName)
