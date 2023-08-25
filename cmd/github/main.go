@@ -67,7 +67,7 @@ func run() {
 		}
 		backupFileName := generateBackupFileName(filePath, source)
 		if err := g.Upload(filePath, backupFileName); err != nil {
-			klog.Errorf("upload %s to %v failed, %v", filePath, backupFileName, err)
+			klog.Error("upload %s to %v failed, %v", filePath, backupFileName, err)
 			return
 		}
 		klog.Infof("upload %s to %v success.", filePath, backupFileName)
@@ -78,11 +78,19 @@ func run() {
 		}
 	}
 
+	sleepTime := time.Hour * time.Duration(backupTime)
+	klog.Info("repo: ", g.Repository)
+	klog.Info("owner: ", g.Owner)
+	klog.Info("branch: ", g.Branch)
+	klog.Info("source: ", source)
+	klog.Info("reserve: ", reserve)
+	klog.Info("backupTime: ", sleepTime)
+
 	for {
 		for _, filePath := range strings.Split(backupFilePath, ",") {
 			backupFunc(filePath)
 		}
-		time.Sleep(time.Hour * time.Duration(backupTime))
+		time.Sleep(sleepTime)
 	}
 }
 
