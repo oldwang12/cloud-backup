@@ -106,10 +106,11 @@ func isDir(filePath string) bool {
 
 func tarFile(filePath string) (string, error) {
 	tarFileName := fmt.Sprintf("%s.tar.gz", path.Base(filePath))
-	cmd := exec.Command("tar", "-zPcf", tarFileName, filePath)
+
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("cd %v;", path.Dir(filePath)), "tar", "-zcf", tarFileName, "-C", path.Base(filePath))
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	return tarFileName, cmd.Run()
+	return path.Join(path.Dir(filePath), tarFileName), cmd.Run()
 }
 
 func check() error {

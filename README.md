@@ -29,6 +29,8 @@ services:
     - --branch=<Your Branch>
     # Your backup filename. If you want to back up multiple files, you can write this. -f=/data/file,/data/directory
     - -f=<Filename>
+    # 24小时执行一次
+    - -t=24 
     volumes:
     - type: bind
       source: /path/backup_file
@@ -64,6 +66,7 @@ spec:
             - --repo=<Your Repo>
             - --branch=<Your Branch>
             - -f=<Filename>
+            - -t=24
           volumeMounts:
             - name: backup-volume
               mountPath: /root/backup_file
