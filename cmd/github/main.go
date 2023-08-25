@@ -22,6 +22,8 @@ var (
 	githubBranch     string
 	githubOwner      string
 	backupFilePath   string
+	source           string
+	reserve          int
 )
 
 var Command = &cobra.Command{
@@ -39,11 +41,20 @@ func init() {
 	Command.Flags().StringVar(&githubBranch, "branch", "", "Github branch.")
 	Command.Flags().StringVar(&githubOwner, "owner", "", "Github owner.")
 	Command.Flags().StringVarP(&backupFilePath, "local_filepath", "f", "", "Local file path, support one or more. Example: /root/test1.sql,/root/test2.sql")
+	Command.Flags().StringVarP(&source, "source", "s", "backup", "File prefix.")
+	Command.Flags().IntVar(&reserve, "reserve", 7, "Reserve")
 }
 
 func run() {
+	if err := check(); err != nil {
+		klog.Fatal(err)
+	}
 	g := github.NewGitHub(githubToken, githubOwner, githubRepository, githubBranch)
 	backupFunc := func(filePath string) {
+		if _, err := os.Stat(filePath); err != nil {
+			klog.Errorf("%v not exist, %v", filePath, err)
+			return
+		}
 		if isDir(filePath) {
 			tarFilePath, err := tarFile(filePath)
 			if err != nil {
@@ -52,25 +63,32 @@ func run() {
 			}
 			filePath = tarFilePath
 		}
-		backupFileName := generateBackupFileName(filePath)
+		backupFileName := generateBackupFileName(filePath, source)
 		if err := g.Upload(filePath, backupFileName); err != nil {
 			klog.Error(err)
 			return
 		}
 		klog.Infof("upload %s to %v success.", filePath, backupFileName)
+
+		if err := g.Delete(backupFileName, reserve); err != nil {
+			klog.Error(err)
+			return
+		}
 	}
 
 	for {
 		for _, filePath := range strings.Split(backupFilePath, ",") {
 			backupFunc(filePath)
 		}
-		time.Sleep(time.Hour * 12)
+		// time.Sleep(time.Hour * 12)
+		time.Sleep(time.Second)
 	}
 }
 
-func generateBackupFileName(filePath string) string {
+func generateBackupFileName(filePath, source string) string {
 	fileName := path.Base(filePath)
-	return fmt.Sprintf("%v_%v.%v",
+	return fmt.Sprintf("%v_%v_%v.%v",
+		source,
 		strings.Split(fileName, ".")[0],
 		time.Now().Format("2006_01_02_150405"),
 		strings.Join(strings.Split(fileName, ".")[1:], "."),
@@ -86,9 +104,28 @@ func isDir(filePath string) bool {
 }
 
 func tarFile(filePath string) (string, error) {
-	tarFilePath := fmt.Sprintf("%s.tar.gz", path.Base(filePath))
-	cmd := exec.Command("tar", "-zPcf", tarFilePath, filePath)
+	tarFileName := fmt.Sprintf("%s.tar.gz", path.Base(filePath))
+	cmd := exec.Command("tar", "-zPcf", tarFileName, filePath)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-	return path.Join(path.Dir(filePath), tarFilePath), cmd.Run()
+	return tarFileName, cmd.Run()
+}
+
+func check() error {
+	if githubToken == "" {
+		return fmt.Errorf("github token is empty")
+	}
+	if githubRepository == "" {
+		return fmt.Errorf("github repository is empty")
+	}
+	if githubBranch == "" {
+		return fmt.Errorf("github branch is empty")
+	}
+	if githubOwner == "" {
+		return fmt.Errorf("github owner is empty")
+	}
+	if backupFilePath == "" {
+		return fmt.Errorf("backup file path is empty")
+	}
+	return nil
 }
