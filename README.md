@@ -27,12 +27,11 @@ services:
     - --repo=<Your Repo>
     # Your backup repo branch.
     - --branch=<Your Branch>
-    # Your backup filename.
+    # Your backup filename. If you want to back up multiple files, you can write this. -f=/data/file,/data/directory
     - -f=<Filename>
     volumes:
     - type: bind
       source: /path/backup_file
-      # Just support path of /root/filename,you can move your backup_file to /root/.
       target: /root/backup_file
 ```
 
@@ -64,7 +63,7 @@ spec:
             - --owner=<username>
             - --repo=<Your Repo>
             - --branch=<Your Branch>
-            - --filename=<Filename>
+            - -f=<Filename>
           volumeMounts:
             - name: backup-volume
               mountPath: /root/backup_file

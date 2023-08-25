@@ -2,11 +2,11 @@ name: Build Docker Image
 
 on:
   push:
-    branches: [ "master" ]
+    branches: ["master"]
     paths-ignore:
-      - 'README.md'
+      - "README.md"
   pull_request:
-    branches: [ "master" ]
+    branches: ["master"]
   release:
     types: [published]
 
@@ -14,10 +14,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-      
-    - name: Login to hub.docker.com
-      run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
+      - uses: actions/checkout@v3
 
-    - name: Build the Docker image
-      run: make build
+      - name: Login to hub.docker.com
+        run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
+
+      - name: Build the Docker image
+        run: make build
+
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Login to hub.docker.com
+        run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
+
+      - name: Build the Docker test image
+        run: make build-test
