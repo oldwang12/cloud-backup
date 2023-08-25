@@ -63,11 +63,11 @@ func run() {
 				klog.Error(err)
 				return
 			}
-			filePath = tarFilePath
+			filePath = path.Join("/root", tarFilePath)
 		}
 		backupFileName := generateBackupFileName(filePath, source)
 		if err := g.Upload(filePath, backupFileName); err != nil {
-			klog.Error("upload %s to %v failed, %v", filePath, backupFileName, err)
+			klog.Errorf("upload %s to %v failed, %v", filePath, backupFileName, err)
 			return
 		}
 		klog.Infof("upload %s to %v success.", filePath, backupFileName)
