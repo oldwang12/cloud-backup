@@ -10,10 +10,8 @@ WORKDIR /root/
 ENV TZ=Asia/Shanghai
 
 COPY --from=builder /root/cloud-backup .
-RUN chmod +x /root/cloud-backup \
-    apk add --update tzdata \
-    && cp /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo $TZ > /etc/timezone \
-    && rm -rf /var/cache/apk/*
+RUN chmod +x /root/cloud-backup && \
+    apk update && \
+    apk add --no-cache tzdata
 
 CMD ["/root/cloud-backup"]
