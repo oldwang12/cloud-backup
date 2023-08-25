@@ -3,6 +3,8 @@ name: Build Docker Image
 on:
   push:
     branches: [ "master" ]
+    paths-ignore:
+      - 'README.md'
   pull_request:
     branches: [ "master" ]
   release:
