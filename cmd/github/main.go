@@ -24,6 +24,7 @@ var (
 	backupFilePath   string
 	source           string
 	reserve          int
+	backupTime       int
 )
 
 var Command = &cobra.Command{
@@ -43,6 +44,7 @@ func init() {
 	Command.Flags().StringVarP(&backupFilePath, "local_filepath", "f", "", "Local file path, support one or more. Example: /root/test1.sql,/root/test2.sql")
 	Command.Flags().StringVarP(&source, "source", "s", "backup", "File prefix.")
 	Command.Flags().IntVar(&reserve, "reserve", 7, "Reserve")
+	Command.Flags().IntVarP(&backupTime, "backuptime", "t", 24, "backup time, 默认单位: Hour,默认值: 24")
 }
 
 func run() {
@@ -80,8 +82,7 @@ func run() {
 		for _, filePath := range strings.Split(backupFilePath, ",") {
 			backupFunc(filePath)
 		}
-		// time.Sleep(time.Hour * 12)
-		time.Sleep(time.Second)
+		time.Sleep(time.Hour * time.Duration(backupTime))
 	}
 }
 
