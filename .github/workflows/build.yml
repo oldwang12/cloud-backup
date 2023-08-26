@@ -170,11 +170,14 @@ jobs:
           mv ./bin/cloud-backup-armv7 ./bin/cloud-backup
           make docker-build-armv7
 
-      - name: 使用 manifest 合并镜像并推送
-        run: make manifest
-
   manifest:
-    needs: [docker-build-amd64, docker-build-arm64, docker-build-armv7]
+    needs:
+      [
+        docker-build-amd64,
+        docker-build-arm64,
+        docker-build-armv7,
+        docker-build-arm8,
+      ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository

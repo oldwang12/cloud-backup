@@ -1,4 +1,4 @@
-.PHONY: docker-build-amd64 docker-build-arm-v7 manifest help
+.PHONY: docker-build-amd64 docker-build-arm64 docker-build-armv7 docker-build-armv8 manifest help
 
 COMMIT_HASH = $(shell git rev-parse --short=7 HEAD)
 
@@ -14,16 +14,22 @@ docker-build-armv7:
 	docker build --platform linux/arm/v7 -t oldwang6/cloud-backup:armv7 .
 	docker push oldwang6/cloud-backup:armv7
 
+docker-build-armv8:
+	docker build --platform linux/arm/v8 -t oldwang6/cloud-backup:armv8 .
+	docker push oldwang6/cloud-backup:armv8
+
 manifest:
 	docker manifest create oldwang6/cloud-backup:${COMMIT_HASH} \
            oldwang6/cloud-backup:amd64 \
 		   oldwang6/cloud-backup:arm64 \
-           oldwang6/cloud-backup:armv7
+           oldwang6/cloud-backup:armv7 \
+		   oldwang6/cloud-backup:armv8
 
 	docker manifest create oldwang6/cloud-backup:latest \
            oldwang6/cloud-backup:amd64 \
            oldwang6/cloud-backup:arm64 \
-           oldwang6/cloud-backup:armv7
+           oldwang6/cloud-backup:armv7 \
+           oldwang6/cloud-backup:armv8
 
 	docker manifest push oldwang6/cloud-backup:${COMMIT_HASH}
 	docker manifest push oldwang6/cloud-backup:latest
