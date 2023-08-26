@@ -22,6 +22,7 @@ jobs:
         run: |
           env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-amd64 main.go
           mkdir -p ${{ runner.workspace }}/bin
+          chmod +x cloud-backup-amd64
           mv cloud-backup-amd64 ${{ runner.workspace }}/bin/
 
       - name: 缓存二进制
@@ -55,6 +56,7 @@ jobs:
         run: |
           env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-armv7 main.go
           mkdir -p ${{ runner.workspace }}/bin
+          chmod +x cloud-backup-amd64
           mv cloud-backup-armv7 ${{ runner.workspace }}/bin/
 
       - name: 缓存二进制
