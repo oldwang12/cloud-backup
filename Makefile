@@ -3,10 +3,10 @@
 COMMIT_HASH = $(shell git rev-parse --short=7 HEAD)
 
 docker-build-amd64:
-	docker build -t oldwang6/cloud-backup-amd64:${COMMIT_HASH} .
+	docker build -t docker.io/oldwang6/cloud-backup-amd64:${COMMIT_HASH} .
 
 docker-build-arm64:
-	docker build -t oldwang6/cloud-backup-arm64:${COMMIT_HASH} .
+	docker build -t docker.io/oldwang6/cloud-backup-arm64:${COMMIT_HASH} .
 
 manifest:
 	docker images
