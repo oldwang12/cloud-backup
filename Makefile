@@ -6,7 +6,7 @@ docker-build-amd64:
 	docker build -t oldwang6/cloud-backup:amd64 .
 
 docker-build-arm64:
-	docker build -t oldwang6/cloud-backup/arm64 .
+	docker build -t oldwang6/cloud-backup:arm64 .
 
 docker-push:
 	docker push oldwang6/cloud-backup:amd64 
