@@ -1,27 +1,100 @@
-name: Build Docker Image
+name: Build and Cache Binary
 
-on:
-  push:
-    branches: ["master"]
-    paths-ignore:
-      - "README.md"
-  pull_request:
-    branches: ["master"]
-  release:
-    types: [published]
+on: [push]
 
 jobs:
-  build:
+  go-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.20
+
+      - name: Build and cache arm64 binary
+        run: |
+          env GOOS=linux GOARCH=arm64 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-arm64 main.go
+          mkdir -p ${{ runner.workspace }}/bin
+          mv cloud-backup-arm64 ${{ runner.workspace }}/bin/
+
+      - name: Build and cache amd64 binary
+        run: |
+          env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-amd64 main.go
+          mkdir -p ${{ runner.workspace }}/bin
+          mv cloud-backup-amd64 ${{ runner.workspace }}/bin/
+
+      - name: Cache binaries
+        uses: actions/cache@v2
+        with:
+          path: ${{ runner.workspace }}/bin
+          key: binaries-${{ runner.os }}
+
+      - name: Upload binaries to artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: binaries
+          path: ${{ runner.workspace }}/bin
+
+  docker-build:
+    needs: go-build # 依赖于前一个 job
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Set up QEMU
-        uses: docker/setup-buildx-action@v1
+      - name: Download cached binaries
+        uses: actions/download-artifact@v2
+        with:
+          name: binaries
+          path: ./bin
+
+      - name: Build amd64
+        run: |
+          chmod +x ./bin/cloud-backup-amd64 \
+          mv ./bin/cloud-backup-amd64 ./bin/cloud-backup
+          make build
+
+      - name: Build arm64
+        run: |
+          chmod +x ./bin/cloud-backup-arm64 \
+          mv ./bin/cloud-backup-amd64 ./bin/cloud-backup
+          make build
 
       - name: Login to hub.docker.com
         run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
 
-      - name: Build image
-        run: make build
+      - name: Create manifest
+        run: |
+          make manifest
+
+# name: Build Docker Image
+
+# on:
+#   push:
+#     branches: ["master"]
+#     paths-ignore:
+#       - "README.md"
+#   pull_request:
+#     branches: ["master"]
+#   release:
+#     types: [published]
+
+# jobs:
+#   build:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout repository
+#         uses: actions/checkout@v3
+
+#       - name: Set up QEMU
+#         uses: docker/setup-buildx-action@v1
+
+#       - name: Login to hub.docker.com
+#         run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
+
+#       - name: Build image
+#         run: make build

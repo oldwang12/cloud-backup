@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path"
 	"regexp"
 	"sort"
 	"strings"
@@ -66,14 +67,14 @@ func (g *GitHub) Upload(localFilePath, remoteFilePath string) error {
 	return nil
 }
 
-func (g *GitHub) Delete(backupFileName string, reserve int) error {
+func (g *GitHub) Delete(backupDir, backupFileName string, reserve int) error {
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(&oauth2.Token{AccessToken: g.Token})
 	tc := oauth2.NewClient(ctx, ts)
 	client := github.NewClient(tc)
 
 	opts := &github.RepositoryContentGetOptions{}
-	_, contents, _, err := client.Repositories.GetContents(ctx, g.Owner, g.Repository, "/", opts)
+	_, contents, _, err := client.Repositories.GetContents(ctx, g.Owner, g.Repository, backupDir, opts)
 	if err != nil {
 		return err
 	}
@@ -128,15 +129,19 @@ func (g *GitHub) Delete(backupFileName string, reserve int) error {
 	})
 
 	deleteFunc := func(fileName string, sha *string) error {
-		_, _, err = client.Repositories.DeleteFile(ctx, g.Owner, g.Repository, fileName, &github.RepositoryContentFileOptions{
-			Message: github.String(fmt.Sprintf("backup time %v", time.Now().Format("2006-01-02 15:04:05"))),
-			SHA:     sha,
-			Branch:  github.String(g.Branch),
-		})
+		_, _, err = client.Repositories.DeleteFile(ctx,
+			g.Owner,
+			g.Repository,
+			path.Join(backupDir, fileName),
+			&github.RepositoryContentFileOptions{
+				Message: github.String(fmt.Sprintf("backup time %v", time.Now().Format("2006-01-02 15:04:05"))),
+				SHA:     sha,
+				Branch:  github.String(g.Branch),
+			})
 		if err != nil {
 			return err
 		}
-		klog.Infof("delete file %v success.", fileName)
+		klog.Infof("delete file %v success.", path.Join(backupDir, fileName))
 		return nil
 	}
 

@@ -57,22 +57,32 @@ func run() {
 			klog.Errorf("%v not exist, %v", filePath, err)
 			return
 		}
+
+		backupDir := fmt.Sprintf("%v_%v", source, path.Base(filePath))
+		klog.Info(backupDir)
+
 		if isDir(filePath) {
 			tarFilePath, err := tarFile(filePath)
 			if err != nil {
 				klog.Error(err)
 				return
 			}
-			filePath = path.Join("/root", tarFilePath)
+			filePath = tarFilePath
+			backupDir = fmt.Sprintf("%v_%v", source, strings.Split(filePath, ".")[0])
 		}
+
 		backupFileName := generateBackupFileName(filePath, source)
-		if err := g.Upload(filePath, backupFileName); err != nil {
-			klog.Error("upload %s to %v failed, %v", filePath, backupFileName, err)
+		backupFilePath := path.Join(backupDir, backupFileName)
+
+		if err := g.Upload(filePath, backupFilePath); err != nil {
+			klog.Error("upload %s to %v failed, %v", filePath, backupFilePath, err)
 			return
 		}
-		klog.Infof("upload %s to %v success.", filePath, backupFileName)
+		klog.Infof("upload %s to %v success.", filePath, backupFilePath)
 
-		if err := g.Delete(backupFileName, reserve); err != nil {
+		time.Sleep(30 * time.Second)
+
+		if err := g.Delete(backupDir, backupFileName, reserve); err != nil {
 			klog.Error(err)
 			return
 		}

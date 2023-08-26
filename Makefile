@@ -1,13 +1,22 @@
-.PHONY: build build-amd64 build-arm64 build-arm-v7 help
+.PHONY: build manifest build-amd64 build-arm64 build-arm-v7 help
 
 COMMIT_HASH = $(shell git rev-parse --short=7 HEAD)
 
 build: ## build image
-	docker buildx create --name all --node local --driver docker-container --platform linux/amd64,linux/arm64,linux/arm/v7 --use
-	docker buildx use all
-	docker buildx build --platform linux/amd64 -t oldwang6/cloud-backup-amd64:${COMMIT_HASH} --push .
-	docker buildx build --platform linux/arm/v7 -t oldwang6/cloud-backup-armv7:${COMMIT_HASH} --push .
-	docker buildx build --platform linux/amd64,linux/arm/v7 -t oldwang6/cloud-backup:latest --push .
+	docker build -t oldwang6/cloud-backup-amd64:${COMMIT_HASH} .
+
+manifest:
+	docker manifest create oldwang6/cloud-backup:${COMMIT_HASH} \
+            oldwang6/cloud-backup-arm64:${COMMIT_HASH} \
+            oldwang6/cloud-backup-amd64:${COMMIT_HASH} \
+	docker manifest push oldwang6/cloud-backup:${COMMIT_HASH}
+
+
+# docker buildx create --name all --node local --driver docker-container --platform linux/amd64,linux/arm64,linux/arm/v7 --use
+# docker buildx use all
+# docker buildx build --platform linux/amd64 -t oldwang6/cloud-backup-amd64:${COMMIT_HASH} --push .
+# docker buildx build --platform linux/arm/v7 -t oldwang6/cloud-backup-armv7:${COMMIT_HASH} --push .
+# docker buildx build --platform linux/amd64,linux/arm/v7 -t oldwang6/cloud-backup:latest --push .
 
 # docker buildx build --platform linux/arm64 -t oldwang6/cloud-backup-arm64:${COMMIT_HASH} --push .
 
