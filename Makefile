@@ -21,7 +21,15 @@ manifest:
            oldwang6/cloud-backup:amd64 \
            oldwang6/cloud-backup:arm64 \
            oldwang6/cloud-backup:arm-v7
+
+	docker manifest create oldwang6/cloud-backup:latest \
+           oldwang6/cloud-backup:amd64 \
+           oldwang6/cloud-backup:arm64 \
+           oldwang6/cloud-backup:arm-v7
+
 	docker manifest push oldwang6/cloud-backup:${COMMIT_HASH}
+	docker manifest push oldwang6/cloud-backup:latest
+
 
 
 # docker buildx create --name all --node local --driver docker-container --platform linux/amd64,linux/arm64,linux/arm/v7 --use
