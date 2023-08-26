@@ -205,7 +205,7 @@ jobs:
           make docker-build-armv7
 
   docker-build-armv8:
-    needs: docker-build-armv8
+    needs: go-build-armv8
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -232,7 +232,7 @@ jobs:
         docker-build-amd64,
         docker-build-arm64,
         docker-build-armv7,
-        docker-build-arm8,
+        docker-build-armv8,
       ]
     runs-on: ubuntu-latest
     steps:
