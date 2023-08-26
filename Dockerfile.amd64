@@ -1,5 +1,0 @@
-FROM oldwang6/alpine
-WORKDIR /root/
-COPY ./cloud-backup-amd64 ./cloud-backup
-RUN chmod +x ./cloud-backup
-CMD ["/root/cloud-backup"]
