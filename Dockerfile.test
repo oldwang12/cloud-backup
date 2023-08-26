@@ -1,0 +1,5 @@
+FROM oldwang6/alpine
+WORKDIR /root/
+COPY ./cloud-backup-arm-v7 .
+RUN chmod +x /root/cloud-backup-arm-v7
+CMD ["/root/cloud-backup"]
