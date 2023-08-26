@@ -14,8 +14,8 @@ docker-push:
 
 manifest:
 	docker manifest create oldwang6/cloud-backup:${COMMIT_HASH} \
-           oldwang6/cloud-backup-arm64:amd64 \
-           oldwang6/cloud-backup-amd64:arm64 \
+           oldwang6/cloud-backup:amd64 \
+           oldwang6/cloud-backup:arm64 \
 	docker manifest push oldwang6/cloud-backup:${COMMIT_HASH}
 
 
