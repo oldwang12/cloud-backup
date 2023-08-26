@@ -14,30 +14,35 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version: "1.20"
-      - run: go version
-        # uses: actions/setup-go@v4
-        # with:
-        #   go-version: 1.20
 
-      - name: Build and cache arm64 binary
+      - name: Go版本信息
+        run: go version
+
+      - name: 编译 arm64 二进制
         run: |
           env GOOS=linux GOARCH=arm64 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-arm64 main.go
           mkdir -p ${{ runner.workspace }}/bin
           mv cloud-backup-arm64 ${{ runner.workspace }}/bin/
 
-      - name: Build and cache amd64 binary
+      - name: 编译 amd64 二进制
         run: |
           env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-amd64 main.go
           mkdir -p ${{ runner.workspace }}/bin
           mv cloud-backup-amd64 ${{ runner.workspace }}/bin/
 
-      - name: Cache binaries
+      - name: 编译 arm v7 二进制
+        run: |
+          env GOOS=linux GOARCH=arm GOARM=7 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-arm-v7 main.go
+          mkdir -p ${{ runner.workspace }}/bin
+          mv cloud-backup-arm-v7 ${{ runner.workspace }}/bin/
+
+      - name: 缓存二进制
         uses: actions/cache@v2
         with:
           path: ${{ runner.workspace }}/bin
           key: binaries-${{ runner.os }}
 
-      - name: Upload binaries to artifacts
+      - name: 上传二进制
         uses: actions/upload-artifact@v2
         with:
           name: binaries
@@ -50,31 +55,37 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Download cached binaries
+      - name: 下载缓存二进制
         uses: actions/download-artifact@v2
         with:
           name: binaries
           path: ./bin
 
-      - name: Build amd64
+      - name: 编译 amd64 镜像
         run: |
           chmod +x ./bin/cloud-backup-amd64
           mv ./bin/cloud-backup-amd64 ./bin/cloud-backup
           make docker-build-amd64
 
-      - name: Build arm64
+      - name: 编译 arm64 镜像
         run: |
           chmod +x ./bin/cloud-backup-arm64
           mv ./bin/cloud-backup-arm64 ./bin/cloud-backup
           make docker-build-arm64
 
-      - name: Login to hub.docker.com
+      - name: 编译 arm v7 镜像
+        run: |
+          chmod +x ./bin/cloud-backup-arm-v7
+          mv ./bin/cloud-backup-arm-v7 ./bin/cloud-backup
+          make docker-build-arm-v7
+
+      - name: 登陆 hub 仓库
         run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
 
-      - name: Push image
+      - name: 推送不同架构镜像
         run: make docker-push
 
-      - name: Create manifest
+      - name: 使用 manifest 合并镜像并推送
         run: make manifest
 # name: Build Docker Image
 
