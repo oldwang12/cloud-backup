@@ -116,6 +116,20 @@ jobs:
       - name: 使用 manifest 合并镜像并推送
         run: make manifest
 
+  docker-build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: 登陆 hub 仓库
+        run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
+
+      - name: 编译 arm v7 镜像
+        run: make docker-build-test
+
+      - name: 使用 manifest 合并镜像并推送
+        run: make manifest
   manifest:
     needs: [docker-build-amd64, docker-build-armv7]
     runs-on: ubuntu-latest

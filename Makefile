@@ -10,6 +10,10 @@ docker-build-armv7:
 	docker build --platform linux/arm/v7 -t oldwang6/cloud-backup:armv7 .
 	docker push oldwang6/cloud-backup:armv7
 
+docker-build-test:
+	docker build --platform linux/arm/v7 -t oldwang6/cloud-backup:armv7 -f Dockerfile.test .
+	docker push oldwang6/cloud-backup:armv7
+
 manifest:
 	docker manifest create oldwang6/cloud-backup:${COMMIT_HASH} \
            oldwang6/cloud-backup:amd64 \
