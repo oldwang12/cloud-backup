@@ -203,8 +203,9 @@ jobs:
           chmod +x ./bin/cloud-backup-armv7
           mv ./bin/cloud-backup-armv7 ./bin/cloud-backup
           make docker-build-armv7
+
   docker-build-armv8:
-    needs: go-build-armv8
+    needs: docker-build-armv8
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
