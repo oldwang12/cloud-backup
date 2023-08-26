@@ -60,13 +60,13 @@ jobs:
         run: |
           chmod +x ./bin/cloud-backup-amd64
           mv ./bin/cloud-backup-amd64 ./bin/cloud-backup
-          make build
+          make docker-build-amd64
 
       - name: Build arm64
         run: |
           chmod +x ./bin/cloud-backup-arm64
           mv ./bin/cloud-backup-arm64 ./bin/cloud-backup
-          make build
+          make docker-build-arm64
 
       - name: Login to hub.docker.com
         run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}

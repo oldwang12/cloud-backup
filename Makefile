@@ -1,9 +1,12 @@
-.PHONY: build manifest build-amd64 build-arm64 build-arm-v7 help
+.PHONY: docker-build-amd64 docker-build-arm64 manifest help
 
 COMMIT_HASH = $(shell git rev-parse --short=7 HEAD)
 
-build: ## build image
+docker-build-amd64:
 	docker build -t oldwang6/cloud-backup-amd64:${COMMIT_HASH} .
+
+docker-build-arm64:
+	docker build -t oldwang6/cloud-backup-arm64:${COMMIT_HASH} .
 
 manifest:
 	docker manifest create oldwang6/cloud-backup:${COMMIT_HASH} \
