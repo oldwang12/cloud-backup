@@ -71,10 +71,11 @@ jobs:
       - name: Login to hub.docker.com
         run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
 
-      - name: Create manifest
-        run: |
-          make manifest
+      - name: Push image
+        run: make docker-push
 
+      - name: Create manifest
+        run: make manifest
 # name: Build Docker Image
 
 # on:
