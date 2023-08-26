@@ -6,7 +6,7 @@ docker-build-amd64:
 	docker buildx build --platform linux/amd64 -t oldwang6/cloud-backup:amd64 --push .
 
 docker-build-arm64:
-	docker buildx build --platform linux/arm64 -t oldwang6/cloud-backup:arm64 --push .
+	docker buildx build --platform darwin/arm64 -t oldwang6/cloud-backup:arm64 --push .
 
 docker-build-arm-v7:
 	docker buildx build --platform linux/arm/v7 -t oldwang6/cloud-backup:arm-v7 --push .
