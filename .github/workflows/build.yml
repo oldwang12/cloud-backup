@@ -65,7 +65,7 @@ jobs:
       - name: Build arm64
         run: |
           chmod +x ./bin/cloud-backup-arm64
-          mv ./bin/cloud-backup-amd64 ./bin/cloud-backup
+          mv ./bin/cloud-backup-arm64 ./bin/cloud-backup
           make build
 
       - name: Login to hub.docker.com
