@@ -12,6 +12,6 @@
 
 FROM oldwang6/alpine
 WORKDIR /root/
-COPY /root/cloud-backup .
+COPY /app/cloud-backup .
 RUN chmod +x /root/cloud-backup
 CMD ["/root/cloud-backup"]

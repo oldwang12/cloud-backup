@@ -59,13 +59,14 @@ jobs:
       - name: Build amd64
         run: |
           chmod +x ./bin/cloud-backup-amd64
-          mv ./bin/cloud-backup-amd64 /root/cloud-backup
+          mkdir /app
+          mv ./bin/cloud-backup-amd64 /app/cloud-backup
           make build
 
       - name: Build arm64
         run: |
           chmod +x ./bin/cloud-backup-arm64
-          mv ./bin/cloud-backup-amd64 /root/cloud-backup
+          mv ./bin/cloud-backup-amd64 /app/cloud-backup
           make build
 
       - name: Login to hub.docker.com
