@@ -61,6 +61,9 @@ jobs:
           name: binaries
           path: ./bin
 
+      - name: 登陆 hub 仓库
+        run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
+
       - name: 编译 amd64 镜像
         run: |
           chmod +x ./bin/cloud-backup-amd64
@@ -78,9 +81,6 @@ jobs:
           chmod +x ./bin/cloud-backup-arm-v7
           mv ./bin/cloud-backup-arm-v7 ./bin/cloud-backup
           make docker-build-arm-v7
-
-      - name: 登陆 hub 仓库
-        run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
 
       # - name: 推送不同架构镜像
       #   run: make docker-push
