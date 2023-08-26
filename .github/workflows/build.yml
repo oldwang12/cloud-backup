@@ -20,7 +20,7 @@ jobs:
 
       - name: 编译 arm64 二进制
         run: |
-          env GOOS=linux GOARCH=arm64 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-arm64 main.go
+          env GOOS=darwin GOARCH=arm64 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-arm64 main.go
           mkdir -p ${{ runner.workspace }}/bin
           mv cloud-backup-arm64 ${{ runner.workspace }}/bin/
 
