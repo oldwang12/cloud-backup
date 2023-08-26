@@ -3,13 +3,13 @@
 COMMIT_HASH = $(shell git rev-parse --short=7 HEAD)
 
 docker-build-amd64:
-	docker build --build-arg TARGETARCH=amd64 -t oldwang6/cloud-backup:amd64 .
+	docker buildx build --platform linux/amd64 -t oldwang6/cloud-backup:amd64 --push .
 
 docker-build-arm64:
-	docker build --build-arg TARGETARCH=arm64 -t oldwang6/cloud-backup:arm64 .
+	docker buildx build --platform linux/arm64 -t oldwang6/cloud-backup:arm64 --push .
 
 docker-build-arm-v7:
-	docker build --build-arg TARGETARCH=armv7 -t oldwang6/cloud-backup:arm-v7 .
+	docker buildx build --platform linux/arm/v7 -t oldwang6/cloud-backup:arm-v7 --push .
 
 docker-push:
 	docker push oldwang6/cloud-backup:amd64 

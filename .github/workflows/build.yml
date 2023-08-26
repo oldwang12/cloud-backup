@@ -82,8 +82,8 @@ jobs:
       - name: 登陆 hub 仓库
         run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
 
-      - name: 推送不同架构镜像
-        run: make docker-push
+      # - name: 推送不同架构镜像
+      #   run: make docker-push
 
       - name: 使用 manifest 合并镜像并推送
         run: make manifest
