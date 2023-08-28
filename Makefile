@@ -1,6 +1,13 @@
 .PHONY: docker-build-amd64 docker-build-arm64 docker-build-armv7 docker-build-armv8 manifest help
 
 COMMIT_HASH = $(shell git rev-parse --short=7 HEAD)
+TAG := $(shell git describe --exact-match --abbrev=0 --tags 2>/dev/null)
+
+ifdef TAG
+    IMAGE_TAG := $(TAG)
+else
+    IMAGE_TAG := $(COMMIT_HASH)
+endif
 
 docker-build-amd64:
 	docker build --platform linux/amd64 -t oldwang6/cloud-backup:amd64 .
@@ -19,7 +26,7 @@ docker-build-armv8:
 	docker push oldwang6/cloud-backup:armv8
 
 manifest:
-	docker manifest create oldwang6/cloud-backup:${COMMIT_HASH} \
+	docker manifest create oldwang6/cloud-backup:${IMAGE_TAG} \
            oldwang6/cloud-backup:amd64 \
 		   oldwang6/cloud-backup:arm64 \
            oldwang6/cloud-backup:armv7 \
@@ -31,7 +38,7 @@ manifest:
            oldwang6/cloud-backup:armv7 \
            oldwang6/cloud-backup:armv8
 
-	docker manifest push oldwang6/cloud-backup:${COMMIT_HASH}
+	docker manifest push oldwang6/cloud-backup:${IMAGE_TAG}
 	docker manifest push oldwang6/cloud-backup:latest
 
 help: ## help
