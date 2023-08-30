@@ -21,8 +21,7 @@ jobs:
           mkdir -p ${{ runner.workspace }}/bin
           chmod +x cloud-backup-amd64
           mv cloud-backup-amd64 ${{ runner.workspace }}/bin/
-          ls -lh ${{ runner.workspace }}/bin
-          md5sum ${{ runner.workspace }}/bin/cloud-backup-amd64
+
       - name: 上传二进制
         uses: actions/upload-artifact@v2
         with:
@@ -32,9 +31,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
@@ -50,25 +46,16 @@ jobs:
           chmod +x cloud-backup-arm64
           mv cloud-backup-arm64 ${{ runner.workspace }}/bin/
 
-      - name: 缓存二进制
-        uses: actions/cache@v2
-        with:
-          path: ${{ runner.workspace }}/bin
-          key: binaries-${{ runner.os }}
-
       - name: 上传二进制
         uses: actions/upload-artifact@v2
         with:
-          name: binaries
+          name: cloud-backup-arm64
           path: ${{ runner.workspace }}/bin
 
   go-build-armv7:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
@@ -84,25 +71,16 @@ jobs:
           chmod +x cloud-backup-armv7
           mv cloud-backup-armv7 ${{ runner.workspace }}/bin/
 
-      - name: 缓存二进制
-        uses: actions/cache@v2
-        with:
-          path: ${{ runner.workspace }}/bin
-          key: binaries-${{ runner.os }}
-
       - name: 上传二进制
         uses: actions/upload-artifact@v2
         with:
-          name: binaries
+          name: cloud-backup-armv7
           path: ${{ runner.workspace }}/bin
 
   go-build-armv8:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
@@ -118,24 +96,17 @@ jobs:
           chmod +x cloud-backup-armv8
           mv cloud-backup-armv8 ${{ runner.workspace }}/bin/
 
-      - name: 缓存二进制
-        uses: actions/cache@v2
-        with:
-          path: ${{ runner.workspace }}/bin
-          key: binaries-${{ runner.os }}
-
       - name: 上传二进制
         uses: actions/upload-artifact@v2
         with:
-          name: binaries
+          name: cloud-backup-armv8
           path: ${{ runner.workspace }}/bin
 
   docker-build-amd64:
     needs: go-build-amd64
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
       - name: 下载二进制
         uses: actions/download-artifact@v2
@@ -148,26 +119,20 @@ jobs:
 
       - name: 编译 amd64 镜像
         run: |
-          ls -lh ./bin
-          ls -lh ./bin/cloud-backup-amd64
           chmod +x ./bin/cloud-backup-amd64
-          md5sum ./bin/cloud-backup-amd64
           mv ./bin/cloud-backup-amd64 ./bin/cloud-backup
-          md5sum ./bin/cloud-backup
-          ./bin/cloud-backup
           make docker-build-amd64
 
   docker-build-arm64:
     needs: go-build-arm64
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: 下载缓存二进制
+      - name: 下载二进制
         uses: actions/download-artifact@v2
         with:
-          name: binaries
+          name: cloud-backup-arm64
           path: ./bin
 
       - name: 登陆 hub 仓库
@@ -183,13 +148,12 @@ jobs:
     needs: go-build-armv7
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: 下载缓存二进制
         uses: actions/download-artifact@v2
         with:
-          name: binaries
+          name: cloud-backup-armv7
           path: ./bin
 
       - name: 登陆 hub 仓库
@@ -205,13 +169,12 @@ jobs:
     needs: go-build-armv8
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: 下载缓存二进制
         uses: actions/download-artifact@v2
         with:
-          name: binaries
+          name: cloud-backup-armv8
           path: ./bin
 
       - name: 登陆 hub 仓库
@@ -233,8 +196,7 @@ jobs:
       ]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
       - name: 登陆 hub 仓库
         run: docker login --username=oldwang6 -p ${{ secrets.HUB_PASSWORD }}
