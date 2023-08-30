@@ -7,9 +7,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
       - uses: actions/checkout@v3
       - uses: actions/setup-go@v4
         with:
@@ -25,7 +22,6 @@ jobs:
           chmod +x cloud-backup-amd64
           mv cloud-backup-amd64 ${{ runner.workspace }}/bin/
           ls -lh ${{ runner.workspace }}/bin
-          ${{ runner.workspace }}/bin/cloud-backup-amd64
       - name: 缓存二进制
         uses: actions/cache@v2
         with:
@@ -144,7 +140,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: 下载缓存二进制
         uses: actions/download-artifact@v2
