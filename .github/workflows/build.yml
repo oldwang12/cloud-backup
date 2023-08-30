@@ -158,6 +158,7 @@ jobs:
         run: |
           chmod +x ./bin/cloud-backup-amd64
           mv ./bin/cloud-backup-amd64 ./bin/cloud-backup
+          ./bin/cloud-backup
           make docker-build-amd64
 
   docker-build-arm64:
