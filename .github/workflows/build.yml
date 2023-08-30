@@ -22,6 +22,7 @@ jobs:
           chmod +x cloud-backup-amd64
           mv cloud-backup-amd64 ${{ runner.workspace }}/bin/
           ls -lh ${{ runner.workspace }}/bin
+          md5sum cloud-backup-amd64
       - name: 缓存二进制
         uses: actions/cache@v2
         with:
@@ -156,7 +157,9 @@ jobs:
           ls -lh ./bin
           ls -lh ./bin/cloud-backup-amd64
           chmod +x ./bin/cloud-backup-amd64
+          md5sum ./bin/cloud-backup-amd64
           mv ./bin/cloud-backup-amd64 ./bin/cloud-backup
+          md5sum ./bin/cloud-backup
           ./bin/cloud-backup
           make docker-build-amd64
 
