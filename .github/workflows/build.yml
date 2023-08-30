@@ -25,7 +25,7 @@ jobs:
           chmod +x cloud-backup-amd64
           mv cloud-backup-amd64 ${{ runner.workspace }}/bin/
           ls -lh ${{ runner.workspace }}/bin
-          ./${{ runner.workspace }}/bin
+          ${{ runner.workspace }}/bin
       - name: 缓存二进制
         uses: actions/cache@v2
         with:
