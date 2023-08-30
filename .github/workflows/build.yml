@@ -156,6 +156,8 @@ jobs:
 
       - name: 编译 amd64 镜像
         run: |
+          ls -lh ./bin
+          ls -lh ./bin/cloud-backup-amd64
           chmod +x ./bin/cloud-backup-amd64
           mv ./bin/cloud-backup-amd64 ./bin/cloud-backup
           ./bin/cloud-backup
