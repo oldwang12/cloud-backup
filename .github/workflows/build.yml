@@ -23,9 +23,7 @@ jobs:
           env GOOS=linux GOARCH=amd64 CGO_ENABLED=0 GOFLAGS=-mod=vendor go build -o cloud-backup-amd64 main.go
           mkdir -p ${{ runner.workspace }}/bin
           chmod +x cloud-backup-amd64
-          ./cloud-backup-amd64
           mv cloud-backup-amd64 ${{ runner.workspace }}/bin/
-          go run main.go
 
       - name: 缓存二进制
         uses: actions/cache@v2
