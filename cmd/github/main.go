@@ -98,7 +98,7 @@ func run() {
 		backupFilePath := path.Join(backupDir, backupFileName)
 
 		if err := g.Upload(filePath, backupFilePath); err != nil {
-			klog.Error("上传 %s to %v 失败, %v", filePath, backupFilePath, err)
+			klog.Errorf("上传 %s to %v 失败, %v", filePath, backupFilePath, err)
 			return
 		}
 		klog.Infof("上传 %s to %v 成功.", filePath, backupFilePath)
