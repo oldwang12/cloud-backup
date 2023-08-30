@@ -50,12 +50,12 @@ func (g *GitHub) Upload(localFilePath, remoteFilePath string) error {
 	}
 
 	if string(fileContent) == "" {
-		klog.Fatal("not support upload empty file")
+		klog.Fatal("不支持上传空文件")
 	}
 
 	// Create a new file in the repository
 	opts := &github.RepositoryContentFileOptions{
-		Message: github.String(fmt.Sprintf("backup time %v", time.Now().Format("2006-01-02 15:04:05"))),
+		Message: github.String(fmt.Sprintf("备份时间 %v", time.Now().Format("2006-01-02 15:04:05"))),
 		Content: fileContent,
 		Branch:  github.String(g.Branch),
 	}
@@ -134,14 +134,14 @@ func (g *GitHub) Delete(backupDir, backupFileName string, reserve int) error {
 			g.Repository,
 			path.Join(backupDir, fileName),
 			&github.RepositoryContentFileOptions{
-				Message: github.String(fmt.Sprintf("backup time %v", time.Now().Format("2006-01-02 15:04:05"))),
+				Message: github.String(fmt.Sprintf("删除时间 %v", time.Now().Format("2006-01-02 15:04:05"))),
 				SHA:     sha,
 				Branch:  github.String(g.Branch),
 			})
 		if err != nil {
 			return err
 		}
-		klog.Infof("delete file %v success.", path.Join(backupDir, fileName))
+		klog.Infof("删除文件 %v 成功.", path.Join(backupDir, fileName))
 		return nil
 	}
 
@@ -170,6 +170,6 @@ func removeFileNameDate(filename string) string {
 		// 使用正则表达式替换文件名中的日期和时间部分
 		return re.ReplaceAllString(filename, ".")
 	}
-	klog.Warningf("%v not match.", filename)
+	klog.Warningf("%v 正则不匹配.", filename)
 	return ""
 }
