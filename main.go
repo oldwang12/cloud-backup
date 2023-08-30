@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	version := "2.1.2"
+	version := "2.1.1"
 	klog.Infof("当前版本: %v", version)
 
 	cmd.Execute()
