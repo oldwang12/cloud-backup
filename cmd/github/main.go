@@ -87,11 +87,17 @@ func run() {
 			backupDir = fmt.Sprintf("%v_%v", source, strings.Split(filePath, ".")[0])
 		}
 
-		klog.Infof("文件 %v 大小为 %v", filePath, sizeStr)
+		sizeStr, sizeB, err := fileSizeLessThan(filePath)
+		if err != nil {
+			klog.Errorf("无法获取文件信息: %v", err)
+			return
+		}
 
-		if !fileSizeLessThan(filePath) {
+		if sizeB/1024/1024 > 100 {
 			klog.Warningf("取消上传文件: %s, 文件大小大于 100M\n", filePath)
 			return
+		} else {
+			klog.Infof("开始上传文件: %s, 文件大小 %s\n", filePath, sizeStr)
 		}
 
 		backupFileName := generateBackupFileName(filePath, source)
@@ -112,12 +118,16 @@ func run() {
 	}
 
 	sleepTime := time.Hour * time.Duration(backupTime)
-	klog.Info("repo: ", g.Repository)
-	klog.Info("owner: ", g.Owner)
-	klog.Info("branch: ", g.Branch)
-	klog.Info("source: ", source)
-	klog.Info("reserve: ", reserve)
-	klog.Info("backupTime: ", sleepTime)
+	klog.Info("===================")
+	version := "2.1.2"
+	klog.Infof("当前版本: %v", version)
+	klog.Info("||repo: ", g.Repository)
+	klog.Info("||owner: ", g.Owner)
+	klog.Info("||branch: ", g.Branch)
+	klog.Info("||source: ", source)
+	klog.Info("||reserve: ", reserve)
+	klog.Info("||backupTime: ", sleepTime)
+	klog.Info("===================")
 
 	// 获取 $0
 	exePath, err := os.Executable()
@@ -203,26 +213,20 @@ func listRootDirFiles() ([]string, error) {
 	return files, nil
 }
 
-// 文件或文件夹是否小于100M
-func fileSizeLessThan(file string) bool {
+// 获取文件大小
+func fileSizeLessThan(file string) (string, float64, error) {
+	var sizeStr string
 	var sizeB float64
 
 	fileInfo, err := os.Stat(file)
 	if err != nil {
-		klog.Errorf("无法获取文件信息: %v", err)
-		return false
+		return sizeStr, sizeB, err
 	}
 
 	if fileInfo.IsDir() {
-		sizeStr, sizeB, err = getDirSize(file)
-	} else {
-		sizeStr, sizeB, err = getFileSize(file)
+		return getDirSize(file)
 	}
-	if err != nil {
-		klog.Errorf("无法获取文件信息: %v", err)
-		return false
-	}
-	return sizeB/1024/1024 < 100
+	return getFileSize(file)
 }
 
 func getDirSize(path string) (string, float64, error) {
